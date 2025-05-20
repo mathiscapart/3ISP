@@ -1,0 +1,7 @@
+- name: "Install packages"
+  hosts: all
+  become_user: true
+  tasks:
+    - apt:
+        name: ncdu
+        state: latest

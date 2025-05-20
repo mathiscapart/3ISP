@@ -1,0 +1,21 @@
+- name: "Get user on server"
+  hosts: all
+  become_user: true
+  tasks:
+    - file:
+        path: /etc/ansible/facts.d/
+        state: directory
+    - copy:
+        dest: /etc/ansible/facts.d/user_connected.fact
+        mode: 0775
+        content: |
+          #!/bin/bash
+          connected_users=$(who | wc -l)
+          echo $connected_users
+    - file:
+        path: "/tmp/userCount.txt"
+        state: touch
+    - copy:
+        dest: "/tmp/userCount.txt"
+        content: |
+            {{ ansible_local.user_connected }}

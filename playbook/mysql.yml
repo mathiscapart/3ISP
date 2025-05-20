@@ -1,0 +1,33 @@
+- name: "Install mysql"
+  hosts: dbserver
+  become_user: true
+  tasks:
+    - apt:
+        name:
+          - mariadb-server
+          - python3-pymysql
+          - python3-pip
+        state: present
+
+    - service:
+        name: mariadb
+        state: started
+        enabled: yes
+
+    - community.mysql.mysql_user:
+        name: john
+        password: "{{ ansible_db_password }}"
+        priv: '*.*:ALL'
+        host: "{{ ansible_db_host }}"
+        state: present
+        login_unix_socket: /run/mysqld/mysqld.sock
+
+    - community.mysql.mysql_user:
+        name: ''
+        host_all: true
+        state: absent
+        login_unix_socket: /run/mysqld/mysqld.sock
+
+    - community.mysql.mysql_db:
+        name: test
+        state: absent

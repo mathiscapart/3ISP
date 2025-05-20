@@ -1,0 +1,14 @@
+all:
+  hosts:
+  children:
+    webserver:
+      hosts:
+        192.168.70.120:
+    dbserver:
+      hosts:
+        192.168.70.121:
+  vars:
+    ansible_user: root
+    ansible_db_password: root
+    ansible_db_host: 192.169.70.120
+    ansible_ssh_private_key_file: /root/.ssh/id_rsa

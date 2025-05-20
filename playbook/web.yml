@@ -1,0 +1,30 @@
+- name: "Deploy vhost"
+  hosts: webserver
+  become_user: true
+  vars:
+    http_host: "example.lan"
+    app_user: "www-data"
+    http_port: 80
+  tasks:
+    - ansible.builtin.apt:
+        name: apache2
+        update_cache: true
+        state: latest
+    - ansible.builtin.file:
+        path: "/var/www/{{ http_host }}"
+        state: directory
+        owner: "{{ app_user }}"
+        mode: '0755'
+    - ansible.builtin.copy:
+        dest: "/var/www/{{ http_host }}/index.html"
+        content: |
+          {{ ansible_hostname }}
+    - ansible.builtin.template:
+        src: "templates/apache.conf.j2"
+        dest: "/etc/apache2/sites-available/{{ http_host }}.conf"
+    - ansible.builtin.command: "/usr/sbin/a2ensite {{ http_host }}.conf"
+    - ansible.builtin.command: "/usr/sbin/a2dissite 000-default.conf"
+  handlers:
+    - ansible.builtin.service:
+        name: apache2
+        state: reloaded
